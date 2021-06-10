@@ -1,0 +1,7 @@
+apiVersion: core.gpumon.com/v1
+kind: Gmt
+metadata:
+  name: gmt-sample
+spec:
+  # Add fields here
+  foo: bar

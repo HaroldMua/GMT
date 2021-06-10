@@ -1,0 +1,7 @@
+domain: gpumon.com
+repo: github.com/HaroldMua/GMT
+resources:
+- group: core
+  kind: Gmt
+  version: v1
+version: "2"
