@@ -57,6 +57,7 @@ type Card struct {
 	Clock       uint   `json:"clock,omitempty"`
 	TotalMemory uint64 `json:"totalMemory,omitempty"`
 	FreeMemory  uint64 `json:"freeMemory,omitempty"`
+	GPUUtil     uint   `json:"gpuUtil,omitempty"`
 	Bandwidth   uint   `json:"bandwidth,omitempty"`
 	Topology    uint   `json:"topology,omitempty"`
 	Temperature uint   `json:"temperature,omitempty"`

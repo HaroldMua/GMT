@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"reflect"
+	"sort"
 	"time"
 
 	"github.com/NVIDIA/gpu-monitoring-tools/bindings/go/nvml"
@@ -107,7 +108,79 @@ func (m *Monitor) process() {
 }
 
 func (m *Monitor) updateGPU() {
+	newCardList := make(v1.CardList, 0)
 
+	if err := nvml.Init(); err != nil {
+		log.ErrPrint(err)
+	}
+	defer func() {
+		if err := nvml.Shutdown(); err != nil {
+			log.ErrPrint(err)
+		}
+	}()
+
+	m.countGPU()
+
+	for i:= uint(0); i < m.cardNumber; i++ {
+		device, err := nvml.NewDevice(i)
+		if err != nil {
+			log.ErrPrint(err)
+		}
+
+		health := "Healthy"
+		status, err := device.Status()
+		if err != nil {
+			log.ErrPrint(err)
+			health = "Unhealthy"
+		}
+
+		newCardList = append(newCardList, v1.Card{
+			ID:          i,
+			Health:      health,
+			Model:       *device.Model,
+			Power:       *device.Power,
+			Core:        *device.Clocks.Cores,
+			Clock:       *device.Clocks.Memory,
+			TotalMemory: *device.Memory,
+			FreeMemory:  *status.Memory.Global.Free,
+			GPUUtil:     *status.Utilization.GPU,
+			Bandwidth:   *device.PCI.Bandwidth,
+			Topology:    *device.Topology.Link,
+			Temperature: *status.Temperature,
+		})
+	}
+
+	sort.Sort(newCardList)
+	if len(m.cardList) == 0 || reflect.DeepEqual(m.cardList, newCardList) {
+		m.cardList = newCardList
+	}
+
+	total, free := uint64(0), uint64(0)
+	for _, card := range newCardList {
+		total += card.TotalMemory
+		free += card.FreeMemory
+	}
+	m.totalMemorySum = total
+	m.freeMemorySum = free
+	m.cardList = newCardList
+
+}
+
+func (m *Monitor) countGPU() {
+	if err := nvml.Init(); err != nil {
+		log.ErrPrint(err)
+	}
+	defer func() {
+		if err := nvml.Shutdown(); err != nil {
+			log.ErrPrint(err)
+		}
+	}()
+
+	count, err := nvml.GetDeviceCount()
+	if err != nil {
+		log.ErrPrint(err)
+	}
+	m.cardNumber = count
 }
 
 func (m *Monitor) needUpdate(status v1.GmtStatus) bool {
