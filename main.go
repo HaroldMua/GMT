@@ -31,7 +31,7 @@ import (
 	// +kubebuilder:scaffold:imports
 )
 
-const InitInterval = 300
+const InitInterval = 1000
 
 var (
 	scheme   = runtime.NewScheme()
@@ -68,10 +68,16 @@ func main() {
 		os.Exit(1)
 	}
 
+	// added
+	// GetClient returns a client configured with the Config. This client may
+	// not be a fully "direct" client -- it may read from a cache, for
+	// instance.
+	// GetCache returns a cache.Cache
 	mon := monitor.NewMonitor(InitInterval, mgr.GetClient(), mgr.GetCache())
 
 	// +kubebuilder:scaffold:builder
 
+	// added
 	go monitor.Run(mon)
 
 	setupLog.Info("starting manager")

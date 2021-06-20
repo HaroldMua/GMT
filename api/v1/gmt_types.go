@@ -29,16 +29,43 @@ type GmtSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of Gmt. Edit Gmt_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	//Foo string `json:"foo,omitempty"`
+
+	UpdateInterval int64 `json:"updateInterval,omitempty"`
 }
 
 // GmtStatus defines the observed state of Gmt
 type GmtStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+
+	CardList       CardList     `json:"cardList,omitempty"`
+	CardNumber     uint         `json:"cardNumber,omitempty"`
+	UpdateTime     *metav1.Time `json:"updateTime,omitempty"`
+	TotalMemorySum uint64       `json:"totalMemorySum,omitempty"`
+	FreeMemorySum  uint64       `json:"freeMemorySum,omitempty"`
+}
+
+type CardList []Card
+
+type Card struct {
+	ID          uint   `json:"id"`
+	Health      string `json:"health,omitempty"`
+	Model       string `json:"model,omitempty"`
+	Power       uint   `json:"power,omitempty"`
+	Core        uint   `json:"core,omitempty"`
+	Clock       uint   `json:"clock,omitempty"`
+	TotalMemory uint64 `json:"totalMemory,omitempty"`
+	FreeMemory  uint64 `json:"freeMemory,omitempty"`
+	Bandwidth   uint   `json:"bandwidth,omitempty"`
+	Topology    uint   `json:"topology,omitempty"`
+	Temperature uint   `json:"temperature,omitempty"`
 }
 
 // +kubebuilder:object:root=true
+
+// Add:
+// +kubebuilder:resource:scope=
 
 // Gmt is the Schema for the gmts API
 type Gmt struct {
