@@ -149,7 +149,7 @@ func (m *Monitor) updateGPU() {
 		})
 	}
 
-	// 	m.cardList = newCardList
+	//m.cardList = newCardList
 
 	// func Sort(data Interface)
 	sort.Sort(newCardList)
