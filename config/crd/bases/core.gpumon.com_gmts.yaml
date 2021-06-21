@@ -14,7 +14,8 @@ spec:
     listKind: GmtList
     plural: gmts
     singular: gmt
-  scope: Namespaced
+  # changed
+  scope: Cluster
   validation:
     openAPIV3Schema:
       description: Gmt is the Schema for the gmts API
@@ -42,6 +43,8 @@ spec:
           description: GmtStatus defines the observed state of Gmt
           properties:
             cardList:
+              description: CardList implements sort.Interface for []Card based on
+                the ID field.
               items:
                 properties:
                   bandwidth:
@@ -53,6 +56,8 @@ spec:
                   freeMemory:
                     format: int64
                     type: integer
+                  gpuUtil:
+                    type: integer
                   health:
                     type: string
                   id:
@@ -61,7 +66,7 @@ spec:
                     type: string
                   power:
                     type: integer
-                  topology:
+                  temperature:
                     type: integer
                   totalMemory:
                     format: int64

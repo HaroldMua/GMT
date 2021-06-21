@@ -54,15 +54,15 @@ func Run(m *Monitor) {
 }
 
 func (m *Monitor) createGmt() error {
-	scv := v1.Gmt{
+	gmt := v1.Gmt{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: m.nodeName,
 		},
-		Spec: v1.GetSpec{
+		Spec: v1.GmtSpec{
 			UpdateInterval: m.updateInterval,
 		},
 	}
-	err := m.client.Create(context.Background(), &scv)
+	err := m.client.Create(context.Background(), &gmt)
 	if err != nil && !apierror.IsAlreadyExists(err) {
 		return err
 	}
@@ -145,11 +145,13 @@ func (m *Monitor) updateGPU() {
 			FreeMemory:  *status.Memory.Global.Free,
 			GPUUtil:     *status.Utilization.GPU,
 			Bandwidth:   *device.PCI.Bandwidth,
-			Topology:    *device.Topology.Link,
 			Temperature: *status.Temperature,
 		})
 	}
 
+	// 	m.cardList = newCardList
+
+	// func Sort(data Interface)
 	sort.Sort(newCardList)
 	if len(m.cardList) == 0 || reflect.DeepEqual(m.cardList, newCardList) {
 		m.cardList = newCardList

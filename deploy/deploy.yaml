@@ -1,0 +1,94 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gmt
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: gmt-cr
+rules:
+  - apiGroups:
+      - "core.gpumon.com"
+    resources:
+      - gmts
+    verbs:
+      - delete
+      - get
+      - list
+      - watch
+      - update
+      - patch
+      - create
+  - apiGroups:
+      - ""
+    resources:
+      - nodes
+    verbs:
+      - delete
+      - get
+      - list
+      - watch
+      - update
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gmt-sa
+  namespace: gmt
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: gmt-crb
+  namespace: gmt
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: gmt-cr
+subjects:
+  - kind: ServiceAccount
+    name: gmt-sa
+    namespace: gmt
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: gmt-2
+  namespace: gmt
+  labels:
+    app: gmt
+spec:
+  selector:
+    matchLabels:
+      app: gmt
+  template:
+    metadata:
+      labels:
+        app: gmt
+    spec:
+      serviceAccountName: gmt-sa
+      containers:
+        - name: gmt
+          image: haroldmua/gmt:v5
+          imagePullPolicy: Always
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: "all"
+          resources:
+            limits:
+              memory: 200Mi
+            requests:
+              cpu: 100m
+              memory: 200Mi
+      terminationGracePeriodSeconds: 30
+#      tolerations:
+#        - effect: NoSchedule
+#          key: nvidia.com/gpu
+#          operator: Exists
+#      nodeSelector:
+#        resource: gpu

@@ -46,7 +46,14 @@ type GmtStatus struct {
 	FreeMemorySum  uint64       `json:"freeMemorySum,omitempty"`
 }
 
+// CardList implements sort.Interface for []Card based on
+// the ID field.
 type CardList []Card
+
+func (a CardList) Len() int           { return len(a) }
+func (a CardList) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a CardList) Less(i, j int) bool { return a[i].ID < a[j].ID }
+
 
 type Card struct {
 	ID          uint   `json:"id"`
@@ -59,7 +66,6 @@ type Card struct {
 	FreeMemory  uint64 `json:"freeMemory,omitempty"`
 	GPUUtil     uint   `json:"gpuUtil,omitempty"`
 	Bandwidth   uint   `json:"bandwidth,omitempty"`
-	Topology    uint   `json:"topology,omitempty"`
 	Temperature uint   `json:"temperature,omitempty"`
 }
 

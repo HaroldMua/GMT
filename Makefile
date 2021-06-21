@@ -1,6 +1,6 @@
 
 # Image URL to use all building/pushing image targets
-IMG ?= controller:latest
+IMG ?= haroldmua/gmt:v5
 # Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
 CRD_OPTIONS ?= "crd:trivialVersions=true"
 
@@ -54,14 +54,6 @@ vet:
 generate: controller-gen
 	$(CONTROLLER_GEN) object:headerFile="hack/boilerplate.go.txt" paths="./..."
 
-# Build the docker image
-docker-build: test
-	docker build . -t ${IMG}
-
-# Push the docker image
-docker-push:
-	docker push ${IMG}
-
 # find or download controller-gen
 # download controller-gen if necessary
 controller-gen:
@@ -78,3 +70,17 @@ CONTROLLER_GEN=$(GOBIN)/controller-gen
 else
 CONTROLLER_GEN=$(shell which controller-gen)
 endif
+
+# Build the docker image
+docker-build:
+	docker build . -t ${IMG}
+
+# Push the docker image
+docker-push:
+	docker push ${IMG}
+
+deploy-crd:
+	kubectl apply -f config/crd/bases/core.run-linux.com_gmts.yaml
+
+deploy:
+	kubectl apply -f deploy/deploy.yaml
