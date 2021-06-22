@@ -3,6 +3,8 @@ package monitor
 import (
 	"context"
 	"os"
+
+	//"os"
 	"reflect"
 	"sort"
 	"time"
@@ -46,6 +48,7 @@ func NewMonitor(interval int64, client client.Client, cache cache.Cache) *Monito
 
 func Run(m *Monitor) {
 	// Initialize CRD and set config
+	//m.nodeName = "gpu03-poweredge-t420"
 	m.nodeName = os.Getenv("NODE_NAME")
 	if err := m.createGmt(); err != nil {
 		panic(err)
@@ -149,14 +152,13 @@ func (m *Monitor) updateGPU() {
 		})
 	}
 
-	//m.cardList = newCardList
 
-	// func Sort(data Interface)
 	sort.Sort(newCardList)
-	if len(m.cardList) == 0 || reflect.DeepEqual(m.cardList, newCardList) {
-		m.cardList = newCardList
-	}
+	//if len(m.cardList) == 0 || reflect.DeepEqual(m.cardList, newCardList) {
+	//	m.cardList = newCardList
+	//}
 
+	m.cardList = newCardList
 	total, free := uint64(0), uint64(0)
 	for _, card := range newCardList {
 		total += card.TotalMemory
@@ -164,8 +166,7 @@ func (m *Monitor) updateGPU() {
 	}
 	m.totalMemorySum = total
 	m.freeMemorySum = free
-	m.cardList = newCardList
-
+	//m.cardList = newCardList
 }
 
 func (m *Monitor) countGPU() {

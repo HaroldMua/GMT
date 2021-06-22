@@ -70,7 +70,7 @@ spec:
       serviceAccountName: gmt-sa
       containers:
         - name: gmt
-          image: haroldmua/gmt:v5
+          image: haroldmua/gmt:v1
           imagePullPolicy: Always
           env:
             - name: NODE_NAME
