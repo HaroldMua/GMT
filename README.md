@@ -102,4 +102,7 @@ kubectl delete -f deploy/deploy.yaml
 kubectl delete -f config/crd/bases/core.gpumon.com_gmts.yaml
 ```
 
+## Reference
+
+[SCV](https://github.com/NJUPT-ISL/SCV)
  
